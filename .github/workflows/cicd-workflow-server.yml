@@ -13,20 +13,20 @@ jobs:
       - name: Login to docker hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 
       - name: Build docker image
-        run: docker build -t navidhejazi/Video-Recommendation-Backend .
+        run: docker build -t navidhejazi/video-recommendation-backend .
       - name: Publish image to docker hub
-        run: docker push navidhejazi/Video-Recommendation-Backend:latest
+        run: docker push navidhejazi/video-recommendation-backend:latest
         
   deploy:
     needs: build
     runs-on: [aws-ec2-runner]
     steps:
       - name: Pull image from docker hub
-        run: docker pull navidhejazi/Video-Recommendation-Backend:latest
+        run: docker pull navidhejazi/video-recommendation-backend:latest
       - name: Delete old container
-        run: docker rm -f Video-Recommendation-Backend-container
+        run: docker rm -f video-recommendation-backend-container
       - name: Run docker container
-        run: docker run -d -p 3001:30001 --name Video-Recommendation-Backend-container navidhejazi/Video-Recommendation-Backend
+        run: docker run -d -p 3001:30001 --name video-recommendation-backend-container navidhejazi/video-recommendation-backend
 
 
 
