@@ -6,31 +6,65 @@ on:
 
 jobs:
   build:
-    runs-on: [ubuntu-latest]
+    runs-on: ubuntu-latest
+    container:
+      image: docker:20.10-dind
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
-      - name: Login to docker hub
-        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 
-      - name: Build docker image
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build Docker image
         run: docker build -t navidhejazi/video-recommendation-backend .
-      - name: Publish image to docker hub
+      - name: Publish image to Docker Hub
         run: docker push navidhejazi/video-recommendation-backend:latest
-        
+
   deploy:
     needs: build
-    runs-on: [aws-ec2-runner]
+    runs-on: [aws-ec2-runner]  
+    container:
+      image: docker:20.10-dind 
     steps:
-      - name: Set up Docker
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker.io
-      - name: Pull image from docker hub
+      - name: Pull image from Docker Hub
         run: docker pull navidhejazi/video-recommendation-backend:latest
       - name: Delete old container
         run: docker rm -f video-recommendation-backend-container
-      - name: Run docker container
+      - name: Run Docker container
         run: docker run -d -p 3001:30001 --name video-recommendation-backend-container navidhejazi/video-recommendation-backend
+
+# name: CICD
+
+# on:
+#   push:
+#     branches: ["main"]
+
+# jobs:
+#   build:
+#     runs-on: [ubuntu-latest]
+#     steps:
+#       - name: Checkout source
+#         uses: actions/checkout@v3
+#       - name: Login to docker hub
+#         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 
+#       - name: Build docker image
+#         run: docker build -t navidhejazi/video-recommendation-backend .
+#       - name: Publish image to docker hub
+#         run: docker push navidhejazi/video-recommendation-backend:latest
+        
+#   deploy:
+#     needs: build
+#     runs-on: [aws-ec2-runner]
+#     steps:
+#       - name: Set up Docker
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get install -y docker.io
+#       - name: Pull image from docker hub
+#         run: docker pull navidhejazi/video-recommendation-backend:latest
+#       - name: Delete old container
+#         run: docker rm -f video-recommendation-backend-container
+#       - name: Run docker container
+#         run: docker run -d -p 3001:30001 --name video-recommendation-backend-container navidhejazi/video-recommendation-backend
 
 
 
