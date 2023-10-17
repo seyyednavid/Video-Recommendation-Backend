@@ -11,6 +11,11 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
+      - name: Create .env File
+        id: create-env-file
+        run: |
+          touch ./.env
+          echo "${{ secrets.PROD_SERVER_ENV_FILE}}" > ./.env
       - name: Login to docker hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 
       - name: Build docker image
@@ -22,10 +27,6 @@ jobs:
     needs: build
     runs-on: [aws-ec2-runner]
     steps:
-      - name: Set up Docker
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker.io
       - name: Pull image from docker hub
         run: docker pull navidhejazi/video-recommendation-backend:latest
       - name: Delete old container
