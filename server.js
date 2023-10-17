@@ -142,7 +142,7 @@ app.put("/ratingdown/:id", async (req, res) => {
   }
 });
 
-//Delete a video
+//Delete a  video
 app.delete("/:id", async (req, res) => {
   const id = req.params.id;
   try {
