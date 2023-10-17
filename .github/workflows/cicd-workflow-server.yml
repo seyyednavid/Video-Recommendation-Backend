@@ -21,6 +21,10 @@ jobs:
     needs: build
     runs-on: [aws-ec2-runner]
     steps:
+      - name: Set up Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
       - name: Pull image from docker hub
         run: docker pull navidhejazi/video-recommendation-backend:latest
       - name: Delete old container
