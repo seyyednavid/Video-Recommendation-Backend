@@ -32,7 +32,7 @@ jobs:
       - name: Delete old container
         run: docker rm -f video-recommendation-backend-container
       - name: Run docker container
-        run: docker run -d -p 3001:3001 --name video-recommendation-backend-container navidhejazi/video-recommendation-backend
+        run: docker run -d -p 3002:3002 --name video-recommendation-backend-container navidhejazi/video-recommendation-backend
 
 
 
