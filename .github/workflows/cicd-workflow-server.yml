@@ -1,39 +1,61 @@
-
-name: CICD
+name: Build and Push Backend Docker Image
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
 
 jobs:
   build:
-    runs-on: [ubuntu-latest]
+    runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v3
-      - name: Create .env File
-        id: create-env-file
-        run: |
-          touch ./.env
-          echo "${{ secrets.PROD_SERVER_ENV_FILE}}" > ./.env
-      - name: Login to docker hub
-        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 
-      - name: Build docker image
-        run: docker build -t navidhejazi/video-recommendation-backend .
-      - name: Publish image to docker hub
-        run: docker push navidhejazi/video-recommendation-backend:latest
-        
-  deploy:
-    needs: build
-    runs-on: [aws-ec2-runner]
-    steps:
-      - name: Pull image from docker hub
-        run: docker pull navidhejazi/video-recommendation-backend:latest
-      - name: Delete old container
-        run: docker rm -f video-recommendation-backend-container
-      - name: Run docker container
-        run: docker run -d -p 3002:3002 --name video-recommendation-backend-container navidhejazi/video-recommendation-backend
+      - name: Checkout source code
+        uses: actions/checkout@v2
 
+      - name: Set up Docker
+        uses: docker/setup-qemu-action@v1
 
+      - name: Build Docker image
+        run: docker build -t navidhejazi/video-recommendation-back .
 
-        
+      - name: Log in to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Docker image
+        run: docker push navidhejazi/video-recommendation-back:latest
+# name: CICD
+
+# on:
+#   push:
+#     branches: ["main"]
+
+# jobs:
+#   build:
+#     runs-on: [ubuntu-latest]
+#     steps:
+#       - name: Checkout source
+#         uses: actions/checkout@v3
+#       - name: Create .env File
+#         id: create-env-file
+#         run: |
+#           touch ./.env
+#           echo "${{ secrets.PROD_SERVER_ENV_FILE}}" > ./.env
+#       - name: Login to docker hub
+#         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+#       - name: Build docker image
+#         run: docker build -t navidhejazi/video-recommendation-backend .
+#       - name: Publish image to docker hub
+#         run: docker push navidhejazi/video-recommendation-backend:latest
+
+#   deploy:
+#     needs: build
+#     runs-on: [aws-ec2-runner]
+#     steps:
+#       - name: Pull image from docker hub
+#         run: docker pull navidhejazi/video-recommendation-backend:latest
+#       - name: Delete old container
+#         run: docker rm -f video-recommendation-backend-container
+#       - name: Run docker container
+#         run: docker run -d -p 3002:3002 --name video-recommendation-backend-container navidhejazi/video-recommendation-backend
+
