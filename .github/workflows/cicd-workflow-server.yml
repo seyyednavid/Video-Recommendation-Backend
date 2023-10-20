@@ -24,6 +24,22 @@ jobs:
 
       - name: Push Docker image
         run: docker push navidhejazi/video-recommendation-back:latest
+  deploy:
+    runs-on: [aws-ec2-runner]
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+
+      - name: stop the previose compose file
+        uses: docker-compose.yaml down
+
+      - name: start the previose compose file
+        run: docker-compose.yaml up -d
+
+
+
+
 # name: CICD
 
 # on:
