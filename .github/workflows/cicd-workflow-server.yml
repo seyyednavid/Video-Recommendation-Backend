@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: stop the previose compose file
-        uses: docker-compose.yaml down
+        run: docker-compose.yaml down
 
       - name: start the previose compose file
         run: docker-compose.yaml up -d
