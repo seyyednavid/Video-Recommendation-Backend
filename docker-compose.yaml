@@ -1,0 +1,20 @@
+version: "3"
+services:
+  backend:
+    image: navidhejazi/video-recommendation-back:latest
+    ports:
+      - "3002:3002"
+    networks:
+      - myapp_network
+
+  frontend:
+    image: navidhejazi/video-recommendation-react:latest
+    environment:
+      - REACT_APP_API_BASE_URL=http://backend:3002
+    ports:
+      - "80:80"
+    networks:
+      - myapp_network
+
+networks:
+  myapp_network:
