@@ -25,7 +25,7 @@ jobs:
           PROD_SERVER_ENV_FILE: ${{ secrets.PROD_SERVER_ENV_FILE }}
 
       - name: Push Docker image
-        run: docker push navidhejazi/video-recommendation-back:latest .
+        run: docker push navidhejazi/video-recommendation-back:latest 
 
   deploy:
     runs-on: ubuntu-latest
