@@ -17,29 +17,47 @@ jobs:
         uses: docker/setup-qemu-action@v1
 
       - name: Build Docker image
-        run: docker build -t navidhejazi/video-recommendation-back .
+        run: docker build -t navidhejazi/video-recommendation-back:latest .
 
       - name: Log in to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        env:
+          PROD_SERVER_ENV_FILE: ${{ secrets.PROD_SERVER_ENV_FILE }}
 
       - name: Push Docker image
-        run: docker push navidhejazi/video-recommendation-back:latest
+        run: docker push navidhejazi/video-recommendation-back:latest .
+
   deploy:
-    runs-on: [aws-ec2-runner]
-    needs: build
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
 
-      - name: stop the previose compose file
-        run: docker-compose down
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.4.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: start the previose compose file
-        run: docker-compose up -d
+      - name: Copy Docker Compose files to EC2
+        run: |
+          source .env
+          scp -i ${{ secrets.SSH_PRIVATE_KEY }} -r docker-compose.yml $SSH_USERNAME@$SSH_HOSTNAME:$EC2_PATH
 
+      - name: SSH into EC2 and deploy
+        run: |
+          source .env
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} $SSH_USERNAME@$SSH_HOSTNAME "cd $EC2_PATH && docker-compose down && docker-compose up -d"
 
+    # steps:
+    #   - name: Checkout source code
+    #     uses: actions/checkout@v2
 
+    #   - name: stop the previose compose file
+    #     run: docker-compose down
+
+    #   - name: start the previose compose file
+    #     run: docker-compose up -d
 
 # name: CICD
 
