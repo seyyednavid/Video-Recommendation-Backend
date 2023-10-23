@@ -23,11 +23,6 @@ jobs:
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
         env:
           PROD_SERVER_ENV_FILE: ${{ secrets.PROD_SERVER_ENV_FILE }}
-          
-      - name: Debug SSH Key
-        run: echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > debug_key
-      - name: Display SSH Key
-        run: cat debug_key
 
       - name: Push Docker image
         run: docker push navidhejazi/video-recommendation-back:latest
