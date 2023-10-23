@@ -40,16 +40,22 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Copy Docker Compose files and environment variables to EC2
+      - name: Create .env file
         run: |
-          scp -i ${{ secrets.SSH_PRIVATE_KEY }} -r docker-compose.yaml ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOSTNAME }}:${{ secrets.EC2_PATH}}
-          # Add your environment variables directly to the remote server
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOSTNAME }} "echo 'PROD_SERVER_ENV_FILE=${{ secrets.PROD_SERVER_ENV_FILE }}' > ${{ secrets.EC2_PATH }}/.env"
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" > .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "SERVER_PORT=${{ secrets.SERVER_PORT }}" >> .env
+
+      - name: Copy Docker Compose and .env files to EC2
+        run: |
+          scp -i ${{ secrets.SSH_PRIVATE_KEY }} -r docker-compose.yaml .env ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOSTNAME }}:${{ secrets.EC2_PATH}}
 
       - name: SSH into EC2 and deploy
         run: |
           ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} $SSH_USERNAME@$SSH_HOSTNAME "cd $EC2_PATH && docker-compose down && docker-compose up -d"
-
     # steps:
     #   - name: Checkout source code
     #     uses: actions/checkout@v2

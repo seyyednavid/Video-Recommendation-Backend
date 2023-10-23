@@ -2,6 +2,8 @@ version: "3"
 services:
   backend:
     image: navidhejazi/video-recommendation-back:latest
+    env_file:
+      - .env
     ports:
       - "3002:3002"
     networks:
