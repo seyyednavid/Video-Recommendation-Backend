@@ -25,29 +25,30 @@ jobs:
           PROD_SERVER_ENV_FILE: ${{ secrets.PROD_SERVER_ENV_FILE }}
 
       - name: Push Docker image
-        run: docker push navidhejazi/video-recommendation-back:latest 
+        run: docker push navidhejazi/video-recommendation-back:latest
 
   deploy:
-    runs-on: ubuntu-latest
+  runs-on: ubuntu-latest
+  needs: build
 
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v2
+  steps:
+    - name: Checkout source code
+      uses: actions/checkout@v2
 
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.4.1
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.4.1
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Copy Docker Compose files to EC2
-        run: |
-          source .env
-          scp -i ${{ secrets.SSH_PRIVATE_KEY }} -r docker-compose.yml $SSH_USERNAME@$SSH_HOSTNAME:$EC2_PATH
+    - name: Copy Docker Compose files and environment variables to EC2
+      run: |
+        scp -i ${{ secrets.SSH_PRIVATE_KEY }} -r docker-compose.yaml $SSH_USERNAME@$SSH_HOSTNAME:$EC2_PATH
+        # Add your environment variables directly to the remote server
+        ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} $SSH_USERNAME@$SSH_HOSTNAME "echo 'PROD_SERVER_ENV_FILE=${{ secrets.PROD_SERVER_ENV_FILE }}' > $EC2_PATH/.env"
 
-      - name: SSH into EC2 and deploy
-        run: |
-          source .env
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} $SSH_USERNAME@$SSH_HOSTNAME "cd $EC2_PATH && docker-compose down && docker-compose up -d"
+    - name: SSH into EC2 and deploy
+      run: |
+        ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} $SSH_USERNAME@$SSH_HOSTNAME "cd $EC2_PATH && docker-compose down && docker-compose up -d"
 
     # steps:
     #   - name: Checkout source code
