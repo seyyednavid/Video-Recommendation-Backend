@@ -58,7 +58,7 @@ jobs:
 
       - name: SSH into EC2 and deploy
         run: |
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} $SSH_USERNAME@$SSH_HOSTNAME "cd $EC2_PATH && docker-compose down && docker-compose up -d"
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOSTNAME }} "cd ${{ secrets.EC2_PATH }} && docker-compose down && docker-compose up -d"
     # steps:
     #   - name: Checkout source code
     #     uses: actions/checkout@v2
