@@ -49,6 +49,9 @@ jobs:
           echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
           echo "SERVER_PORT=${{ secrets.SERVER_PORT }}" >> .env
 
+      - name: Create directory on EC2
+        run: ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOSTNAME }} "mkdir -p ${{ secrets.EC2_PATH}}"
+
       - name: Copy Docker Compose and .env files to EC2
         run: |
           scp -i ${{ secrets.SSH_PRIVATE_KEY }} -r docker-compose.yaml .env ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOSTNAME }}:${{ secrets.EC2_PATH}}
