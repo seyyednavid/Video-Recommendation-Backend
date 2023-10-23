@@ -35,16 +35,26 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v2
 
+      - name: Debug SSH Key
+        run: echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > debug_key
+
+      - name: Set SSH Key Permissions
+        run: chmod 600 debug_key
+
+      - name: Display SSH Key
+        run: cat debug_key
+
       - name: Use SSH to deploy
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOSTNAME }}
           username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: debug_key
           script: |
             mkdir -p ${{ secrets.EC2_PATH }}
             scp -r docker-compose.yaml .env ${{ secrets.SSH_HOSTNAME }}:${{ secrets.EC2_PATH}}
             ssh ${{ secrets.SSH_HOSTNAME }} "cd ${{ secrets.EC2_PATH }} && docker-compose down && docker-compose up -d"
+
 
 # name: Build and Push Backend Docker Image
 
