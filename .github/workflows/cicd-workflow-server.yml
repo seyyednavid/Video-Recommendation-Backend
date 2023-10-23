@@ -40,7 +40,7 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOSTNAME }}
           username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.YOUR_SSH_SECRET_NAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             mkdir -p ${{ secrets.EC2_PATH }}
             scp -r docker-compose.yaml .env ${{ secrets.SSH_HOSTNAME }}:${{ secrets.EC2_PATH}}
