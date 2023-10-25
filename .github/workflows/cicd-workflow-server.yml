@@ -43,8 +43,9 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             mkdir -p ${{ secrets.EC2_PATH }}
-            scp -r -o StrictHostKeyChecking=no docker-compose.yaml .env ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOSTNAME }}:${{ secrets.EC2_PATH}}
-            ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOSTNAME }} "cd ${{ secrets.EC2_PATH }} && docker-compose down && docker-compose up -d"
+            scp -r docker-compose.yaml .env ${{ secrets.SSH_HOSTNAME }}:${{ secrets.EC2_PATH}}
+            ssh ${{ secrets.SSH_HOSTNAME }} "cd ${{ secrets.EC2_PATH }} && docker-compose down && docker-compose up -d"
+
 
 
 # name: Build and Push Backend Docker Image
